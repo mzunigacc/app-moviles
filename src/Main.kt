@@ -4,6 +4,7 @@ import model.Producto
 import model.Repartidor
 import model.Usuario
 import service.InventarioService
+import service.RepartidorService
 import service.ValidacionService
 
 fun main() {
@@ -80,6 +81,47 @@ fun main() {
 
     for (usuario in usuarios) {
         println(usuario.obtenerDescripcion())
+    }
+
+    println()
+    println("=== ASIGNACIÓN DE REPARTIDOR ===")
+
+    val repartidoresDisponibles = listOf(
+        Repartidor(
+            nombre = "Carlos",
+            contacto = "912345678",
+            distanciaKm = 2.5
+        ),
+        Repartidor(
+            nombre = "Andrea",
+            contacto = "923456789",
+            distanciaKm = 1.2
+        ),
+        Repartidor(
+            nombre = "Felipe",
+            contacto = "934567890",
+            distanciaKm = 4.8
+        )
+    )
+
+    val repartidorAsignado =
+        RepartidorService.asignarRepartidorMasCercano(
+            repartidoresDisponibles
+        )
+
+    if (repartidorAsignado != null) {
+
+        println(
+            "Repartidor asignado: ${repartidorAsignado.nombre}"
+        )
+
+        println(
+            "Distancia: ${repartidorAsignado.distanciaKm} km"
+        )
+
+    } else {
+
+        println("No hay repartidores disponibles.")
     }
 
     println()
