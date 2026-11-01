@@ -35,7 +35,12 @@ fun main() {
 
     val pedido = Pedido(
         cliente = cliente,
-        productos = listOf(pizzaPepperoni),
+        productos = listOf(
+            pizzaPepperoni,
+            pizzaPepperoni,
+            pizzaPepperoni,
+            pizzaPepperoni
+        ),
         estado = "En preparación"
     )
 
@@ -44,7 +49,10 @@ fun main() {
     println()
     println(pizzaPepperoni.detallarProducto())
     println()
-    println("Subtotal del pedido: $${pedido.calcularSubtotal()}")
+    println("Subtotal: $${pedido.calcularSubtotal()}")
+    println("Impuesto: $${pedido.calcularImpuesto()}")
+    println("Descuento: $${pedido.calcularDescuento()}")
+    println("Total final: $${pedido.calcularTotal()}")
     println("Estado: ${pedido.estado}")
 
     pedido.cambiarEstado("Listo")
