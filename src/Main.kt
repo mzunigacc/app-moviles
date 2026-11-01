@@ -3,6 +3,7 @@ import model.Pedido
 import model.Producto
 import model.Repartidor
 import model.Usuario
+import service.InventarioService
 
 fun main() {
 
@@ -59,5 +60,43 @@ fun main() {
 
     for (usuario in usuarios) {
         println(usuario.obtenerDescripcion())
+    }
+
+    println()
+    println("=== PRUEBA DE INVENTARIO ===")
+
+    val inventario = mutableMapOf(
+        "Masa" to 10,
+        "Salsa de tomate" to 8,
+        "Queso" to 6,
+        "Pepperoni" to 4
+    )
+
+    val inventarioService = InventarioService(inventario)
+
+    inventarioService.mostrarInventario()
+
+    println()
+    println("Verificando ingredientes para 2 pizzas...")
+
+    val ingredientesNecesarios = mapOf(
+        "Masa" to 2,
+        "Salsa de tomate" to 2,
+        "Queso" to 2,
+        "Pepperoni" to 2
+    )
+
+    val pedidoDisponible =
+        inventarioService.verificarDisponibilidad(ingredientesNecesarios)
+
+    if (pedidoDisponible) {
+        inventarioService.descontarIngredientes(ingredientesNecesarios)
+
+        println()
+        println("Pedido aceptado. Inventario actualizado:")
+
+        inventarioService.mostrarInventario()
+    } else {
+        println("Pedido rechazado por falta de stock.")
     }
 }
