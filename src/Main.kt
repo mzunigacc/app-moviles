@@ -4,16 +4,23 @@ import model.Producto
 import model.Repartidor
 import model.Usuario
 import service.InventarioService
+import service.ValidacionService
 
 fun main() {
 
     println("=== SISTEMA PIZZERÍA ===")
     println()
 
+    val telefonoValidado =
+        ValidacionService.validarTelefono("987654321")
+
+    val correoValidado =
+        ValidacionService.validarCorreo("matias@email.com")
+
     val cliente = Cliente(
         nombre = "Matías",
-        contacto = "987654321",
-        correo = "matias@email.com"
+        contacto = telefonoValidado,
+        correo = correoValidado
     )
 
     val repartidor = Repartidor(
@@ -38,7 +45,6 @@ fun main() {
         productos = listOf(
             pizzaPepperoni,
             pizzaPepperoni,
-            pizzaPepperoni,
             pizzaPepperoni
         ),
         estado = "En preparación"
@@ -47,8 +53,10 @@ fun main() {
     println(cliente.obtenerDescripcion())
     println(repartidor.obtenerDescripcion())
     println()
+
     println(pizzaPepperoni.detallarProducto())
     println()
+
     println("Subtotal: $${pedido.calcularSubtotal()}")
     println("Impuesto: $${pedido.calcularImpuesto()}")
     println("Descuento: $${pedido.calcularDescuento()}")
@@ -59,12 +67,16 @@ fun main() {
 
     println("Nuevo estado: ${pedido.estado}")
     println()
+
     println(repartidor.entregarPedido())
 
     println()
     println("=== POLIMORFISMO ===")
 
-    val usuarios: List<Usuario> = listOf(cliente, repartidor)
+    val usuarios: List<Usuario> = listOf(
+        cliente,
+        repartidor
+    )
 
     for (usuario in usuarios) {
         println(usuario.obtenerDescripcion())
@@ -80,7 +92,8 @@ fun main() {
         "Pepperoni" to 4
     )
 
-    val inventarioService = InventarioService(inventario)
+    val inventarioService =
+        InventarioService(inventario)
 
     inventarioService.mostrarInventario()
 
@@ -95,16 +108,72 @@ fun main() {
     )
 
     val pedidoDisponible =
-        inventarioService.verificarDisponibilidad(ingredientesNecesarios)
+        inventarioService.verificarDisponibilidad(
+            ingredientesNecesarios
+        )
 
     if (pedidoDisponible) {
-        inventarioService.descontarIngredientes(ingredientesNecesarios)
+
+        inventarioService.descontarIngredientes(
+            ingredientesNecesarios
+        )
 
         println()
         println("Pedido aceptado. Inventario actualizado:")
 
         inventarioService.mostrarInventario()
+
     } else {
-        println("Pedido rechazado por falta de stock.")
+
+        println(
+            "Pedido rechazado por falta de stock."
+        )
     }
+
+    println()
+    println("=== PRUEBA DE VALIDACIONES ===")
+
+    val telefonoIncorrecto =
+        ValidacionService.validarTelefono(
+            "ABC123"
+        )
+
+    val correoIncorrecto =
+        ValidacionService.validarCorreo(
+            "correo-mal-formado"
+        )
+
+    val telefonoNulo =
+        ValidacionService.validarTelefono(
+            null
+        )
+
+    val correoNulo =
+        ValidacionService.validarCorreo(
+            null
+        )
+
+    println(
+        "Teléfono válido: $telefonoValidado"
+    )
+
+    println(
+        "Correo válido: $correoValidado"
+    )
+
+    println(
+        "Teléfono incorrecto: $telefonoIncorrecto"
+    )
+
+    println(
+        "Correo incorrecto: $correoIncorrecto"
+    )
+
+    println(
+        "Teléfono nulo: $telefonoNulo"
+    )
+
+    println(
+        "Correo nulo: $correoNulo"
+    )
 }
