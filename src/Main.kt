@@ -1,14 +1,63 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-fun main() {
-    val name = "Kotlin"
-    //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-    // to see how IntelliJ IDEA suggests fixing it.
-    println("Hello, " + name + "!")
+import model.Cliente
+import model.Pedido
+import model.Producto
+import model.Repartidor
+import model.Usuario
 
-    for (i in 1..5) {
-        //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-        // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        println("i = $i")
+fun main() {
+
+    println("=== SISTEMA PIZZERÍA ===")
+    println()
+
+    val cliente = Cliente(
+        nombre = "Matías",
+        contacto = "987654321",
+        correo = "matias@email.com"
+    )
+
+    val repartidor = Repartidor(
+        nombre = "Carlos",
+        contacto = "912345678",
+        distanciaKm = 2.5
+    )
+
+    val pizzaPepperoni = Producto(
+        nombre = "Pizza Pepperoni",
+        precio = 8990.0,
+        ingredientes = listOf(
+            "Masa",
+            "Salsa de tomate",
+            "Queso",
+            "Pepperoni"
+        )
+    )
+
+    val pedido = Pedido(
+        cliente = cliente,
+        productos = listOf(pizzaPepperoni),
+        estado = "En preparación"
+    )
+
+    println(cliente.obtenerDescripcion())
+    println(repartidor.obtenerDescripcion())
+    println()
+    println(pizzaPepperoni.detallarProducto())
+    println()
+    println("Subtotal del pedido: $${pedido.calcularSubtotal()}")
+    println("Estado: ${pedido.estado}")
+
+    pedido.cambiarEstado("Listo")
+
+    println("Nuevo estado: ${pedido.estado}")
+    println()
+    println(repartidor.entregarPedido())
+
+    println()
+    println("=== POLIMORFISMO ===")
+
+    val usuarios: List<Usuario> = listOf(cliente, repartidor)
+
+    for (usuario in usuarios) {
+        println(usuario.obtenerDescripcion())
     }
 }
