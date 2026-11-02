@@ -3,6 +3,7 @@ import model.Pedido
 import model.Producto
 import model.Repartidor
 import model.Usuario
+import service.EntradaService
 import service.InventarioService
 import service.RepartidorService
 import service.ValidacionService
@@ -67,7 +68,8 @@ fun main() {
             pizzaPepperoni,
             pizzaPepperoni
         ),
-        estado = "En preparación"
+        estado = "En preparación",
+        notas = null
     )
 
     val pedido2 = Pedido(
@@ -76,7 +78,8 @@ fun main() {
             pizzaQueso,
             pizzaPepperoni
         ),
-        estado = "En camino"
+        estado = "En camino",
+        notas = "Entregar en recepción"
     )
 
     val pedido3 = Pedido(
@@ -99,6 +102,7 @@ fun main() {
     println("Descuento: $${pedido.calcularDescuento()}")
     println("Total final: $${pedido.calcularTotal()}")
     println("Estado: ${pedido.estado}")
+    println("Notas: ${pedido.obtenerNotas()}")
 
     pedido.cambiarEstado("Listo")
 
@@ -145,20 +149,19 @@ fun main() {
             repartidoresDisponibles
         )
 
-    if (repartidorAsignado != null) {
+    repartidorAsignado?.let { repartidorEncontrado ->
 
         println(
-            "Repartidor asignado: ${repartidorAsignado.nombre}"
+            "Repartidor asignado: ${repartidorEncontrado.nombre}"
         )
 
         println(
-            "Distancia: ${repartidorAsignado.distanciaKm} km"
+            "Distancia: ${repartidorEncontrado.distanciaKm} km"
         )
 
-    } else {
-
-        println("No hay repartidores disponibles.")
-    }
+    } ?: println(
+        "No hay repartidores disponibles."
+    )
 
     println()
     println("=== REPORTE DE PEDIDOS DEL DÍA ===")
@@ -183,6 +186,7 @@ fun main() {
             Pizzas: $nombresProductos
             Total: $${pedidoActual.calcularTotal()}
             Estado: ${pedidoActual.estado}
+            Notas: ${pedidoActual.obtenerNotas()}
             """.trimIndent()
         )
 
@@ -301,4 +305,50 @@ fun main() {
     println(
         "Correo nulo: $correoNulo"
     )
+
+    println()
+    println("=== PRUEBA DE MANEJO DE ERRORES ===")
+
+    val precioValido =
+        EntradaService.convertirPrecio("12990")
+
+    val precioTextoInvalido =
+        EntradaService.convertirPrecio("ABC")
+
+    val precioNegativo =
+        EntradaService.convertirPrecio("-5000")
+
+    val inventarioValido =
+        EntradaService.validarCantidadInventario(10)
+
+    val inventarioNegativo =
+        EntradaService.validarCantidadInventario(-5)
+
+    println("Precio válido: $precioValido")
+    println("Precio inválido: $precioTextoInvalido")
+    println("Precio negativo: $precioNegativo")
+    println("Inventario válido: $inventarioValido")
+    println("Inventario negativo: $inventarioNegativo")
+
+    println()
+    println("=== PRUEBA DE LET ===")
+
+    val correoParaNotificacion: String? =
+        cliente.correo
+
+    correoParaNotificacion?.let { correo ->
+
+        println(
+            "Notificación enviada a $correo"
+        )
+    }
+
+    val correoAusente: String? = null
+
+    correoAusente?.let { correo ->
+
+        println(
+            "Notificación enviada a $correo"
+        )
+    }
 }

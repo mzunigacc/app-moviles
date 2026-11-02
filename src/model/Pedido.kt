@@ -33,6 +33,10 @@ class Pedido(
         return subtotal + impuesto - descuento
     }
 
+    fun obtenerNotas(): String {
+        return notas ?: "Sin notas"
+    }
+
     fun cambiarEstado(nuevoEstado: String) {
         estado = nuevoEstado
     }
