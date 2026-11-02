@@ -3,9 +3,16 @@ package model
 class Producto(
     val nombre: String,
     val precio: Double,
-    val ingredientes: List<String>
+    val ingredientes: Map<String, Int>
 ) {
+
     fun detallarProducto(): String {
-        return "Producto: $nombre | Precio: $$precio | Ingredientes: ${ingredientes.joinToString()}"
+
+        val detalleIngredientes =
+            ingredientes.entries.joinToString { ingrediente ->
+                "${ingrediente.key}: ${ingrediente.value}"
+            }
+
+        return "Producto: $nombre | Precio: $$precio | Ingredientes: $detalleIngredientes"
     }
 }

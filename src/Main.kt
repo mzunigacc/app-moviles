@@ -14,10 +14,14 @@ fun main() {
     println()
 
     val telefonoValidado =
-        ValidacionService.validarTelefono("987654321")
+        ValidacionService.validarTelefono(
+            "987654321"
+        )
 
     val correoValidado =
-        ValidacionService.validarCorreo("matias@email.com")
+        ValidacionService.validarCorreo(
+            "matias@email.com"
+        )
 
     val cliente = Cliente(
         nombre = "Matías",
@@ -27,8 +31,14 @@ fun main() {
 
     val cliente2 = Cliente(
         nombre = "Camila",
-        contacto = ValidacionService.validarTelefono("976543210"),
-        correo = ValidacionService.validarCorreo("camila@email.com")
+        contacto =
+            ValidacionService.validarTelefono(
+                "976543210"
+            ),
+        correo =
+            ValidacionService.validarCorreo(
+                "camila@email.com"
+            )
     )
 
     val repartidor = Repartidor(
@@ -40,24 +50,21 @@ fun main() {
     val pizzaPepperoni = Producto(
         nombre = "Pizza Pepperoni",
         precio = 8990.0,
-        ingredientes = listOf(
-            "Masa",
-            "Salsa de tomate",
-            "Queso",
-            "Pepperoni"
+        ingredientes = mapOf(
+            "Masa" to 1,
+            "Salsa de tomate" to 1,
+            "Queso" to 1,
+            "Pepperoni" to 1
         )
     )
 
     val pizzaQueso = Producto(
         nombre = "Pizza Cuatro Quesos",
         precio = 9490.0,
-        ingredientes = listOf(
-            "Masa",
-            "Salsa de tomate",
-            "Queso mozzarella",
-            "Queso azul",
-            "Queso parmesano",
-            "Queso gouda"
+        ingredientes = mapOf(
+            "Masa" to 1,
+            "Salsa de tomate" to 1,
+            "Queso" to 2
         )
     )
 
@@ -94,69 +101,104 @@ fun main() {
     println(repartidor.obtenerDescripcion())
     println()
 
-    println(pizzaPepperoni.detallarProducto())
+    println(
+        pizzaPepperoni.detallarProducto()
+    )
+
     println()
 
-    println("Subtotal: $${pedido.calcularSubtotal()}")
-    println("Impuesto: $${pedido.calcularImpuesto()}")
-    println("Descuento: $${pedido.calcularDescuento()}")
-    println("Total final: $${pedido.calcularTotal()}")
-    println("Estado: ${pedido.estado}")
-    println("Notas: ${pedido.obtenerNotas()}")
+    println(
+        "Subtotal: $${pedido.calcularSubtotal()}"
+    )
+
+    println(
+        "Impuesto: $${pedido.calcularImpuesto()}"
+    )
+
+    println(
+        "Descuento: $${pedido.calcularDescuento()}"
+    )
+
+    println(
+        "Total final: $${pedido.calcularTotal()}"
+    )
+
+    println(
+        "Estado: ${pedido.estado}"
+    )
+
+    println(
+        "Notas: ${pedido.obtenerNotas()}"
+    )
 
     pedido.cambiarEstado("Listo")
 
-    println("Nuevo estado: ${pedido.estado}")
+    println(
+        "Nuevo estado: ${pedido.estado}"
+    )
+
     println()
 
-    println(repartidor.entregarPedido())
+    println(
+        repartidor.entregarPedido()
+    )
 
     println()
     println("=== POLIMORFISMO ===")
 
-    val usuarios: List<Usuario> = listOf(
-        cliente,
-        repartidor
-    )
+    val usuarios: List<Usuario> =
+        listOf(
+            cliente,
+            repartidor
+        )
 
     for (usuario in usuarios) {
-        println(usuario.obtenerDescripcion())
+        println(
+            usuario.obtenerDescripcion()
+        )
     }
 
     println()
-    println("=== ASIGNACIÓN DE REPARTIDOR ===")
-
-    val repartidoresDisponibles = listOf(
-        Repartidor(
-            nombre = "Carlos",
-            contacto = "912345678",
-            distanciaKm = 2.5
-        ),
-        Repartidor(
-            nombre = "Andrea",
-            contacto = "923456789",
-            distanciaKm = 1.2
-        ),
-        Repartidor(
-            nombre = "Felipe",
-            contacto = "934567890",
-            distanciaKm = 4.8
-        )
+    println(
+        "=== ASIGNACIÓN DE REPARTIDOR ==="
     )
 
+    val repartidoresDisponibles =
+        listOf(
+            Repartidor(
+                nombre = "Carlos",
+                contacto = "912345678",
+                distanciaKm = 2.5
+            ),
+            Repartidor(
+                nombre = "Andrea",
+                contacto = "923456789",
+                distanciaKm = 1.2
+            ),
+            Repartidor(
+                nombre = "Felipe",
+                contacto = "934567890",
+                distanciaKm = 4.8
+            )
+        )
+
     val repartidorAsignado =
-        RepartidorService.asignarRepartidorMasCercano(
-            repartidoresDisponibles
-        )
+        RepartidorService
+            .asignarRepartidorMasCercano(
+                repartidoresDisponibles
+            )
 
-    repartidorAsignado?.let { repartidorEncontrado ->
-
-        println(
-            "Repartidor asignado: ${repartidorEncontrado.nombre}"
-        )
+    repartidorAsignado?.let {
+        repartidorEncontrado ->
 
         println(
-            "Distancia: ${repartidorEncontrado.distanciaKm} km"
+            "Repartidor asignado: " +
+            repartidorEncontrado.nombre
+        )
+
+        println(
+            "Distancia: " +
+            "${repartidorEncontrado.distanciaKm} km"
         )
 
     } ?: println(
@@ -164,20 +206,27 @@ fun main() {
     )
 
     println()
-    println("=== REPORTE DE PEDIDOS DEL DÍA ===")
-
-    val pedidosDelDia = arrayOf(
-        pedido,
-        pedido2,
-        pedido3
+    println(
+        "=== REPORTE DE PEDIDOS DEL DÍA ==="
     )
 
-    for ((indice, pedidoActual) in pedidosDelDia.withIndex()) {
+    val pedidosDelDia =
+        arrayOf(
+            pedido,
+            pedido2,
+            pedido3
+        )
+
+    for (
+        (indice, pedidoActual)
+        in pedidosDelDia.withIndex()
+    ) {
 
         val nombresProductos =
-            pedidoActual.productos.joinToString { producto ->
-                producto.nombre
-            }
+            pedidoActual.productos
+                .joinToString { producto ->
+                    producto.nombre
+                }
 
         println(
             """
@@ -194,73 +243,194 @@ fun main() {
     }
 
     val pedidosCompletados =
-        pedidosDelDia.filter { pedidoActual ->
-            pedidoActual.estado == "Entregado"
+        pedidosDelDia.filter {
+            pedidoActual ->
+            pedidoActual.estado ==
+                "Entregado"
         }
 
     val pedidosPendientes =
-        pedidosDelDia.filter { pedidoActual ->
-            pedidoActual.estado != "Entregado"
+        pedidosDelDia.filter {
+            pedidoActual ->
+            pedidoActual.estado !=
+                "Entregado"
         }
 
     println(
-        "Pedidos completados: ${pedidosCompletados.size}"
+        "Pedidos completados: " +
+        "${pedidosCompletados.size}"
     )
 
     println(
-        "Pedidos pendientes: ${pedidosPendientes.size}"
+        "Pedidos pendientes: " +
+        "${pedidosPendientes.size}"
     )
 
     println()
-    println("=== PRUEBA DE INVENTARIO ===")
-
-    val inventario = mutableMapOf(
-        "Masa" to 10,
-        "Salsa de tomate" to 8,
-        "Queso" to 6,
-        "Pepperoni" to 4
+    println(
+        "=== PRUEBA DE INVENTARIO AUTOMÁTICO ==="
     )
 
+    val inventario =
+        mutableMapOf(
+            "Masa" to 10,
+            "Salsa de tomate" to 8,
+            "Queso" to 10,
+            "Pepperoni" to 4
+        )
+
     val inventarioService =
-        InventarioService(inventario)
+        InventarioService(
+            inventario
+        )
 
     inventarioService.mostrarInventario()
 
     println()
-    println("Verificando ingredientes para 2 pizzas...")
-
-    val ingredientesNecesarios = mapOf(
-        "Masa" to 2,
-        "Salsa de tomate" to 2,
-        "Queso" to 2,
-        "Pepperoni" to 2
+    println(
+        "Calculando ingredientes " +
+        "necesarios para el pedido..."
     )
 
-    val pedidoDisponible =
-        inventarioService.verificarDisponibilidad(
-            ingredientesNecesarios
-        )
+    val ingredientesNecesarios =
+        inventarioService
+            .calcularIngredientesNecesarios(
+                pedido.productos
+            )
 
-    if (pedidoDisponible) {
+    println(
+        "=== INGREDIENTES NECESARIOS ==="
+    )
 
-        inventarioService.descontarIngredientes(
-            ingredientesNecesarios
-        )
-
-        println()
-        println("Pedido aceptado. Inventario actualizado:")
-
-        inventarioService.mostrarInventario()
-
-    } else {
+    for (
+        (ingrediente, cantidad)
+        in ingredientesNecesarios
+    ) {
 
         println(
-            "Pedido rechazado por falta de stock."
+            "$ingrediente: $cantidad"
         )
     }
 
     println()
-    println("=== PRUEBA DE VALIDACIONES ===")
+
+    val pedidoDisponible =
+        inventarioService
+            .verificarDisponibilidad(
+                ingredientesNecesarios
+            )
+
+    if (pedidoDisponible) {
+
+        inventarioService
+            .descontarIngredientes(
+                ingredientesNecesarios
+            )
+
+        println()
+        println(
+            "Pedido aceptado. " +
+            "Inventario actualizado:"
+        )
+
+        inventarioService
+            .mostrarInventario()
+
+    } else {
+
+        println(
+            "Pedido rechazado " +
+            "por falta de stock."
+        )
+    }
+
+    println()
+    println(
+        "=== PRUEBA DE STOCK INSUFICIENTE AUTOMÁTICO ==="
+    )
+
+    val inventarioPrueba =
+        mutableMapOf(
+            "Masa" to 10,
+            "Salsa de tomate" to 10,
+            "Queso" to 10,
+            "Pepperoni" to 4
+        )
+
+    val inventarioPruebaService =
+        InventarioService(
+            inventarioPrueba
+        )
+
+    val pedidoStockInsuficiente =
+        Pedido(
+            cliente = cliente,
+            productos = listOf(
+                pizzaPepperoni,
+                pizzaPepperoni,
+                pizzaPepperoni,
+                pizzaPepperoni,
+                pizzaPepperoni
+            ),
+            estado = "En preparación"
+        )
+
+    inventarioPruebaService
+        .mostrarInventario()
+
+    println()
+
+    val ingredientesPrueba =
+        inventarioPruebaService
+            .calcularIngredientesNecesarios(
+                pedidoStockInsuficiente.productos
+            )
+
+    println(
+        "=== INGREDIENTES NECESARIOS ==="
+    )
+
+    for (
+        (ingrediente, cantidad)
+        in ingredientesPrueba
+    ) {
+
+        println(
+            "$ingrediente: $cantidad"
+        )
+    }
+
+    println()
+
+    val stockDisponible =
+        inventarioPruebaService
+            .verificarDisponibilidad(
+                ingredientesPrueba
+            )
+
+    if (stockDisponible) {
+
+        inventarioPruebaService
+            .descontarIngredientes(
+                ingredientesPrueba
+            )
+
+        println(
+            "Pedido de prueba aceptado."
+        )
+
+    } else {
+
+        println(
+            "Pedido de prueba rechazado " +
+            "correctamente por falta de stock."
+        )
+    }
+
+    println()
+    println(
+        "=== PRUEBA DE VALIDACIONES ==="
+    )
 
     val telefonoIncorrecto =
         ValidacionService.validarTelefono(
@@ -283,69 +453,112 @@ fun main() {
         )
 
     println(
-        "Teléfono válido: $telefonoValidado"
+        "Teléfono válido: " +
+        telefonoValidado
     )
 
     println(
-        "Correo válido: $correoValidado"
+        "Correo válido: " +
+        correoValidado
     )
 
     println(
-        "Teléfono incorrecto: $telefonoIncorrecto"
+        "Teléfono incorrecto: " +
+        telefonoIncorrecto
     )
 
     println(
-        "Correo incorrecto: $correoIncorrecto"
+        "Correo incorrecto: " +
+        correoIncorrecto
     )
 
     println(
-        "Teléfono nulo: $telefonoNulo"
+        "Teléfono nulo: " +
+        telefonoNulo
     )
 
     println(
-        "Correo nulo: $correoNulo"
+        "Correo nulo: " +
+        correoNulo
     )
 
     println()
-    println("=== PRUEBA DE MANEJO DE ERRORES ===")
+    println(
+        "=== PRUEBA DE MANEJO DE ERRORES ==="
+    )
 
     val precioValido =
-        EntradaService.convertirPrecio("12990")
+        EntradaService.convertirPrecio(
+            "12990"
+        )
 
     val precioTextoInvalido =
-        EntradaService.convertirPrecio("ABC")
+        EntradaService.convertirPrecio(
+            "ABC"
+        )
 
     val precioNegativo =
-        EntradaService.convertirPrecio("-5000")
+        EntradaService.convertirPrecio(
+            "-5000"
+        )
 
     val inventarioValido =
-        EntradaService.validarCantidadInventario(10)
+        EntradaService
+            .validarCantidadInventario(
+                10
+            )
 
     val inventarioNegativo =
-        EntradaService.validarCantidadInventario(-5)
+        EntradaService
+            .validarCantidadInventario(
+                -5
+            )
 
-    println("Precio válido: $precioValido")
-    println("Precio inválido: $precioTextoInvalido")
-    println("Precio negativo: $precioNegativo")
-    println("Inventario válido: $inventarioValido")
-    println("Inventario negativo: $inventarioNegativo")
+    println(
+        "Precio válido: $precioValido"
+    )
+
+    println(
+        "Precio inválido: " +
+        precioTextoInvalido
+    )
+
+    println(
+        "Precio negativo: " +
+        precioNegativo
+    )
+
+    println(
+        "Inventario válido: " +
+        inventarioValido
+    )
+
+    println(
+        "Inventario negativo: " +
+        inventarioNegativo
+    )
 
     println()
-    println("=== PRUEBA DE LET ===")
+    println(
+        "=== PRUEBA DE LET ==="
+    )
 
-    val correoParaNotificacion: String? =
-        cliente.correo
+    val correoParaNotificacion:
+        String? = cliente.correo
 
-    correoParaNotificacion?.let { correo ->
+    correoParaNotificacion?.let {
+        correo ->
 
         println(
             "Notificación enviada a $correo"
         )
     }
 
-    val correoAusente: String? = null
+    val correoAusente:
+        String? = null
 
-    correoAusente?.let { correo ->
+    correoAusente?.let {
+        correo ->
 
         println(
             "Notificación enviada a $correo"
