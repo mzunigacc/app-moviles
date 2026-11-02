@@ -268,6 +268,30 @@ fun main() {
 
     println()
     println(
+        "=== TIPOS DE PIZZA VENDIDOS ==="
+    )
+
+    val tiposPizzaVendidos: Set<String> =
+        pedidosDelDia
+            .flatMap { pedidoActual ->
+                pedidoActual.productos
+            }
+            .map { producto ->
+                producto.nombre
+            }
+            .toSet()
+
+    for (tipoPizza in tiposPizzaVendidos) {
+        println("- $tipoPizza")
+    }
+
+    println(
+        "Cantidad de tipos distintos: " +
+        "${tiposPizzaVendidos.size}"
+    )
+
+    println()
+    println(
         "=== PRUEBA DE INVENTARIO AUTOMÁTICO ==="
     )
 
