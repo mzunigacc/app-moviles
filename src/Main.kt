@@ -1,155 +1,111 @@
-import model.Cliente
+import model.DatosApp
 import model.Pedido
-import model.Producto
-import model.Repartidor
 import model.Usuario
+import service.DatosPruebaFactory
 import service.EntradaService
 import service.InventarioService
 import service.RepartidorService
+import service.ReporteService
 import service.ValidacionService
 
 fun main() {
 
-    println("=== SISTEMA PIZZERÍA ===")
-    println()
+    val datos =
+        DatosPruebaFactory.crearDatos()
 
-    val telefonoValidado =
-        ValidacionService.validarTelefono(
-            "987654321"
-        )
+    mostrarResumenInicial(datos)
+    demostrarPolimorfismo(datos)
+    probarAsignacionRepartidor(datos)
+    generarReporteDiario(datos)
+    mostrarTiposPizzaVendidos(datos)
+    probarInventarioAutomatico(datos)
+    probarStockInsuficiente(datos)
+    probarValidaciones()
+    probarManejoErrores()
+    probarLet(datos)
+}
 
-    val correoValidado =
-        ValidacionService.validarCorreo(
-            "matias@email.com"
-        )
-
-    val cliente = Cliente(
-        nombre = "Matías",
-        contacto = telefonoValidado,
-        correo = correoValidado
-    )
-
-    val cliente2 = Cliente(
-        nombre = "Camila",
-        contacto =
-            ValidacionService.validarTelefono(
-                "976543210"
-            ),
-        correo =
-            ValidacionService.validarCorreo(
-                "camila@email.com"
-            )
-    )
-
-    val repartidor = Repartidor(
-        nombre = "Carlos",
-        contacto = "912345678",
-        distanciaKm = 2.5
-    )
-
-    val pizzaPepperoni = Producto(
-        nombre = "Pizza Pepperoni",
-        precio = 8990.0,
-        ingredientes = mapOf(
-            "Masa" to 1,
-            "Salsa de tomate" to 1,
-            "Queso" to 1,
-            "Pepperoni" to 1
-        )
-    )
-
-    val pizzaQueso = Producto(
-        nombre = "Pizza Cuatro Quesos",
-        precio = 9490.0,
-        ingredientes = mapOf(
-            "Masa" to 1,
-            "Salsa de tomate" to 1,
-            "Queso" to 2
-        )
-    )
-
-    val pedido = Pedido(
-        cliente = cliente,
-        productos = listOf(
-            pizzaPepperoni,
-            pizzaPepperoni,
-            pizzaPepperoni
-        ),
-        estado = "En preparación",
-        notas = null
-    )
-
-    val pedido2 = Pedido(
-        cliente = cliente2,
-        productos = listOf(
-            pizzaQueso,
-            pizzaPepperoni
-        ),
-        estado = "En camino",
-        notas = "Entregar en recepción"
-    )
-
-    val pedido3 = Pedido(
-        cliente = cliente,
-        productos = listOf(
-            pizzaQueso
-        ),
-        estado = "Entregado"
-    )
-
-    println(cliente.obtenerDescripcion())
-    println(repartidor.obtenerDescripcion())
-    println()
+fun mostrarResumenInicial(
+    datos: DatosApp
+) {
 
     println(
-        pizzaPepperoni.detallarProducto()
+        "=== SISTEMA PIZZERÍA ==="
     )
 
     println()
 
     println(
-        "Subtotal: $${pedido.calcularSubtotal()}"
+        datos.clientePrincipal
+            .obtenerDescripcion()
     )
 
     println(
-        "Impuesto: $${pedido.calcularImpuesto()}"
-    )
-
-    println(
-        "Descuento: $${pedido.calcularDescuento()}"
-    )
-
-    println(
-        "Total final: $${pedido.calcularTotal()}"
-    )
-
-    println(
-        "Estado: ${pedido.estado}"
-    )
-
-    println(
-        "Notas: ${pedido.obtenerNotas()}"
-    )
-
-    pedido.cambiarEstado("Listo")
-
-    println(
-        "Nuevo estado: ${pedido.estado}"
+        datos.repartidorBase
+            .obtenerDescripcion()
     )
 
     println()
 
     println(
-        repartidor.entregarPedido()
+        datos.pizzaPepperoni
+            .detallarProducto()
     )
 
     println()
-    println("=== POLIMORFISMO ===")
+
+    val pedidoPrincipal =
+        datos.pedidosDelDia.first()
+
+    println(
+        "Subtotal: " +
+        "$${pedidoPrincipal.calcularSubtotal()}"
+    )
+
+    println(
+        "Impuesto: " +
+        "$${pedidoPrincipal.calcularImpuesto()}"
+    )
+
+    println(
+        "Descuento: " +
+        "$${pedidoPrincipal.calcularDescuento()}"
+    )
+
+    println(
+        "Total final: " +
+        "$${pedidoPrincipal.calcularTotal()}"
+    )
+
+    println(
+        "Estado: ${pedidoPrincipal.estado}"
+    )
+
+    println(
+        "Notas: ${pedidoPrincipal.obtenerNotas()}"
+    )
+
+    println()
+
+    println(
+        datos.repartidorBase
+            .entregarPedido()
+    )
+}
+
+fun demostrarPolimorfismo(
+    datos: DatosApp
+) {
+
+    println()
+    println(
+        "=== POLIMORFISMO ==="
+    )
 
     val usuarios: List<Usuario> =
         listOf(
-            cliente,
-            repartidor
+            datos.clientePrincipal,
+            datos.repartidorBase
         )
 
     for (usuario in usuarios) {
@@ -157,114 +113,55 @@ fun main() {
             usuario.obtenerDescripcion()
         )
     }
+}
+
+fun probarAsignacionRepartidor(
+    datos: DatosApp
+) {
 
     println()
     println(
         "=== ASIGNACIÓN DE REPARTIDOR ==="
     )
 
-    val repartidoresDisponibles =
-        listOf(
-            Repartidor(
-                nombre = "Carlos",
-                contacto = "912345678",
-                distanciaKm = 2.5
-            ),
-            Repartidor(
-                nombre = "Andrea",
-                contacto = "923456789",
-                distanciaKm = 1.2
-            ),
-            Repartidor(
-                nombre = "Felipe",
-                contacto = "934567890",
-                distanciaKm = 4.8
-            )
-        )
-
     val repartidorAsignado =
         RepartidorService
             .asignarRepartidorMasCercano(
-                repartidoresDisponibles
+                datos.repartidoresDisponibles
             )
 
     repartidorAsignado?.let {
-        repartidorEncontrado ->
+        repartidor ->
 
         println(
             "Repartidor asignado: " +
-            repartidorEncontrado.nombre
+            repartidor.nombre
         )
 
         println(
             "Distancia: " +
-            "${repartidorEncontrado.distanciaKm} km"
+            "${repartidor.distanciaKm} km"
         )
 
     } ?: println(
         "No hay repartidores disponibles."
     )
+}
+
+fun generarReporteDiario(
+    datos: DatosApp
+) {
 
     println()
-    println(
-        "=== REPORTE DE PEDIDOS DEL DÍA ==="
+
+    ReporteService.generarReporteDiario(
+        datos.pedidosDelDia
     )
+}
 
-    val pedidosDelDia =
-        arrayOf(
-            pedido,
-            pedido2,
-            pedido3
-        )
-
-    for (
-        (indice, pedidoActual)
-        in pedidosDelDia.withIndex()
-    ) {
-
-        val nombresProductos =
-            pedidoActual.productos
-                .joinToString { producto ->
-                    producto.nombre
-                }
-
-        println(
-            """
-            Pedido ${indice + 1}
-            Cliente: ${pedidoActual.cliente.nombre}
-            Pizzas: $nombresProductos
-            Total: $${pedidoActual.calcularTotal()}
-            Estado: ${pedidoActual.estado}
-            Notas: ${pedidoActual.obtenerNotas()}
-            """.trimIndent()
-        )
-
-        println()
-    }
-
-    val pedidosCompletados =
-        pedidosDelDia.filter {
-            pedidoActual ->
-            pedidoActual.estado ==
-                "Entregado"
-        }
-
-    val pedidosPendientes =
-        pedidosDelDia.filter {
-            pedidoActual ->
-            pedidoActual.estado !=
-                "Entregado"
-        }
-
-    println(
-        "Pedidos completados: " +
-        "${pedidosCompletados.size}"
-    )
-
-    println(
-        "Pedidos pendientes: " +
-        "${pedidosPendientes.size}"
-    )
+fun mostrarTiposPizzaVendidos(
+    datos: DatosApp
+) {
 
     println()
     println(
@@ -272,23 +169,31 @@ fun main() {
     )
 
     val tiposPizzaVendidos: Set<String> =
-        pedidosDelDia
-            .flatMap { pedidoActual ->
-                pedidoActual.productos
+        datos.pedidosDelDia
+            .flatMap { pedido ->
+                pedido.productos
             }
             .map { producto ->
                 producto.nombre
             }
             .toSet()
 
-    for (tipoPizza in tiposPizzaVendidos) {
+    for (
+        tipoPizza
+        in tiposPizzaVendidos
+    ) {
         println("- $tipoPizza")
     }
 
     println(
         "Cantidad de tipos distintos: " +
-        "${tiposPizzaVendidos.size}"
+        tiposPizzaVendidos.size
     )
+}
+
+fun probarInventarioAutomatico(
+    datos: DatosApp
+) {
 
     println()
     println(
@@ -303,53 +208,37 @@ fun main() {
             "Pepperoni" to 4
         )
 
-    val inventarioService =
+    val servicio =
         InventarioService(
             inventario
         )
 
-    inventarioService.mostrarInventario()
+    servicio.mostrarInventario()
 
     println()
-    println(
-        "Calculando ingredientes " +
-        "necesarios para el pedido..."
-    )
+
+    val pedidoPrincipal =
+        datos.pedidosDelDia.first()
 
     val ingredientesNecesarios =
-        inventarioService
-            .calcularIngredientesNecesarios(
-                pedido.productos
-            )
+        servicio.calcularIngredientesNecesarios(
+            pedidoPrincipal.productos
+        )
 
-    println(
-        "=== INGREDIENTES NECESARIOS ==="
+    mostrarIngredientesNecesarios(
+        ingredientesNecesarios
     )
 
-    for (
-        (ingrediente, cantidad)
-        in ingredientesNecesarios
-    ) {
-
-        println(
-            "$ingrediente: $cantidad"
+    val disponible =
+        servicio.verificarDisponibilidad(
+            ingredientesNecesarios
         )
-    }
 
-    println()
+    if (disponible) {
 
-    val pedidoDisponible =
-        inventarioService
-            .verificarDisponibilidad(
-                ingredientesNecesarios
-            )
-
-    if (pedidoDisponible) {
-
-        inventarioService
-            .descontarIngredientes(
-                ingredientesNecesarios
-            )
+        servicio.descontarIngredientes(
+            ingredientesNecesarios
+        )
 
         println()
         println(
@@ -357,23 +246,20 @@ fun main() {
             "Inventario actualizado:"
         )
 
-        inventarioService
-            .mostrarInventario()
-
-    } else {
-
-        println(
-            "Pedido rechazado " +
-            "por falta de stock."
-        )
+        servicio.mostrarInventario()
     }
+}
+
+fun probarStockInsuficiente(
+    datos: DatosApp
+) {
 
     println()
     println(
         "=== PRUEBA DE STOCK INSUFICIENTE AUTOMÁTICO ==="
     )
 
-    val inventarioPrueba =
+    val inventario =
         mutableMapOf(
             "Masa" to 10,
             "Salsa de tomate" to 10,
@@ -381,34 +267,51 @@ fun main() {
             "Pepperoni" to 4
         )
 
-    val inventarioPruebaService =
+    val servicio =
         InventarioService(
-            inventarioPrueba
+            inventario
         )
 
-    val pedidoStockInsuficiente =
+    val pedidoPrueba =
         Pedido(
-            cliente = cliente,
-            productos = listOf(
-                pizzaPepperoni,
-                pizzaPepperoni,
-                pizzaPepperoni,
-                pizzaPepperoni,
-                pizzaPepperoni
-            ),
+            cliente =
+                datos.clientePrincipal,
+            productos = List(5) {
+                datos.pizzaPepperoni
+            },
             estado = "En preparación"
         )
 
-    inventarioPruebaService
-        .mostrarInventario()
+    servicio.mostrarInventario()
 
     println()
 
-    val ingredientesPrueba =
-        inventarioPruebaService
-            .calcularIngredientesNecesarios(
-                pedidoStockInsuficiente.productos
-            )
+    val ingredientesNecesarios =
+        servicio.calcularIngredientesNecesarios(
+            pedidoPrueba.productos
+        )
+
+    mostrarIngredientesNecesarios(
+        ingredientesNecesarios
+    )
+
+    val disponible =
+        servicio.verificarDisponibilidad(
+            ingredientesNecesarios
+        )
+
+    if (!disponible) {
+        println()
+        println(
+            "Pedido de prueba rechazado " +
+            "correctamente por falta de stock."
+        )
+    }
+}
+
+fun mostrarIngredientesNecesarios(
+    ingredientes: Map<String, Int>
+) {
 
     println(
         "=== INGREDIENTES NECESARIOS ==="
@@ -416,7 +319,7 @@ fun main() {
 
     for (
         (ingrediente, cantidad)
-        in ingredientesPrueba
+        in ingredientes
     ) {
 
         println(
@@ -425,36 +328,24 @@ fun main() {
     }
 
     println()
+}
 
-    val stockDisponible =
-        inventarioPruebaService
-            .verificarDisponibilidad(
-                ingredientesPrueba
-            )
-
-    if (stockDisponible) {
-
-        inventarioPruebaService
-            .descontarIngredientes(
-                ingredientesPrueba
-            )
-
-        println(
-            "Pedido de prueba aceptado."
-        )
-
-    } else {
-
-        println(
-            "Pedido de prueba rechazado " +
-            "correctamente por falta de stock."
-        )
-    }
+fun probarValidaciones() {
 
     println()
     println(
         "=== PRUEBA DE VALIDACIONES ==="
     )
+
+    val telefonoValido =
+        ValidacionService.validarTelefono(
+            "987654321"
+        )
+
+    val correoValido =
+        ValidacionService.validarCorreo(
+            "matias@email.com"
+        )
 
     val telefonoIncorrecto =
         ValidacionService.validarTelefono(
@@ -477,34 +368,31 @@ fun main() {
         )
 
     println(
-        "Teléfono válido: " +
-        telefonoValidado
+        "Teléfono válido: $telefonoValido"
     )
 
     println(
-        "Correo válido: " +
-        correoValidado
+        "Correo válido: $correoValido"
     )
 
     println(
-        "Teléfono incorrecto: " +
-        telefonoIncorrecto
+        "Teléfono incorrecto: $telefonoIncorrecto"
     )
 
     println(
-        "Correo incorrecto: " +
-        correoIncorrecto
+        "Correo incorrecto: $correoIncorrecto"
     )
 
     println(
-        "Teléfono nulo: " +
-        telefonoNulo
+        "Teléfono nulo: $telefonoNulo"
     )
 
     println(
-        "Correo nulo: " +
-        correoNulo
+        "Correo nulo: $correoNulo"
     )
+}
+
+fun probarManejoErrores() {
 
     println()
     println(
@@ -543,24 +431,25 @@ fun main() {
     )
 
     println(
-        "Precio inválido: " +
-        precioTextoInvalido
+        "Precio inválido: $precioTextoInvalido"
     )
 
     println(
-        "Precio negativo: " +
-        precioNegativo
+        "Precio negativo: $precioNegativo"
     )
 
     println(
-        "Inventario válido: " +
-        inventarioValido
+        "Inventario válido: $inventarioValido"
     )
 
     println(
-        "Inventario negativo: " +
-        inventarioNegativo
+        "Inventario negativo: $inventarioNegativo"
     )
+}
+
+fun probarLet(
+    datos: DatosApp
+) {
 
     println()
     println(
@@ -568,7 +457,8 @@ fun main() {
     )
 
     val correoParaNotificacion:
-        String? = cliente.correo
+        String? =
+        datos.clientePrincipal.correo
 
     correoParaNotificacion?.let {
         correo ->

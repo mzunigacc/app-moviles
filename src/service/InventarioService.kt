@@ -32,7 +32,8 @@ class InventarioService(
                     ingredientesNecesarios[ingrediente] ?: 0
 
                 ingredientesNecesarios[ingrediente] =
-                    cantidadAcumulada + cantidadPorPizza
+                    cantidadAcumulada +
+                    cantidadPorPizza
             }
         }
 
@@ -43,7 +44,8 @@ class InventarioService(
         ingredientesNecesarios: Map<String, Int>
     ): Boolean {
 
-        val faltantes = mutableListOf<String>()
+        val faltantes =
+            mutableListOf<String>()
 
         for (
             (ingrediente, cantidadNecesaria)
@@ -58,10 +60,15 @@ class InventarioService(
                 cantidadNecesaria
             ) {
 
+                val cantidadFaltante =
+                    cantidadNecesaria -
+                    cantidadDisponible
+
                 faltantes.add(
                     "$ingrediente " +
                     "(disponible: $cantidadDisponible, " +
-                    "necesario: $cantidadNecesaria)"
+                    "necesario: $cantidadNecesaria, " +
+                    "faltan: $cantidadFaltante)"
                 )
             }
         }
@@ -87,9 +94,19 @@ class InventarioService(
                     println("- $faltante")
                 }
 
+                println()
+                println("Pasos para reabastecer:")
                 println(
-                    "Se debe reabastecer el inventario " +
-                    "antes de aceptar el pedido."
+                    "1. Identificar los ingredientes insuficientes."
+                )
+                println(
+                    "2. Reponer al menos la cantidad faltante."
+                )
+                println(
+                    "3. Actualizar el inventario."
+                )
+                println(
+                    "4. Volver a verificar el pedido."
                 )
 
                 false
@@ -110,7 +127,8 @@ class InventarioService(
                 inventario[ingrediente] ?: 0
 
             inventario[ingrediente] =
-                cantidadActual - cantidadNecesaria
+                cantidadActual -
+                cantidadNecesaria
         }
     }
 }
