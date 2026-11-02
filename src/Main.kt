@@ -24,6 +24,12 @@ fun main() {
         correo = correoValidado
     )
 
+    val cliente2 = Cliente(
+        nombre = "Camila",
+        contacto = ValidacionService.validarTelefono("976543210"),
+        correo = ValidacionService.validarCorreo("camila@email.com")
+    )
+
     val repartidor = Repartidor(
         nombre = "Carlos",
         contacto = "912345678",
@@ -41,6 +47,19 @@ fun main() {
         )
     )
 
+    val pizzaQueso = Producto(
+        nombre = "Pizza Cuatro Quesos",
+        precio = 9490.0,
+        ingredientes = listOf(
+            "Masa",
+            "Salsa de tomate",
+            "Queso mozzarella",
+            "Queso azul",
+            "Queso parmesano",
+            "Queso gouda"
+        )
+    )
+
     val pedido = Pedido(
         cliente = cliente,
         productos = listOf(
@@ -49,6 +68,23 @@ fun main() {
             pizzaPepperoni
         ),
         estado = "En preparación"
+    )
+
+    val pedido2 = Pedido(
+        cliente = cliente2,
+        productos = listOf(
+            pizzaQueso,
+            pizzaPepperoni
+        ),
+        estado = "En camino"
+    )
+
+    val pedido3 = Pedido(
+        cliente = cliente,
+        productos = listOf(
+            pizzaQueso
+        ),
+        estado = "Entregado"
     )
 
     println(cliente.obtenerDescripcion())
@@ -123,6 +159,53 @@ fun main() {
 
         println("No hay repartidores disponibles.")
     }
+
+    println()
+    println("=== REPORTE DE PEDIDOS DEL DÍA ===")
+
+    val pedidosDelDia = arrayOf(
+        pedido,
+        pedido2,
+        pedido3
+    )
+
+    for ((indice, pedidoActual) in pedidosDelDia.withIndex()) {
+
+        val nombresProductos =
+            pedidoActual.productos.joinToString { producto ->
+                producto.nombre
+            }
+
+        println(
+            """
+            Pedido ${indice + 1}
+            Cliente: ${pedidoActual.cliente.nombre}
+            Pizzas: $nombresProductos
+            Total: $${pedidoActual.calcularTotal()}
+            Estado: ${pedidoActual.estado}
+            """.trimIndent()
+        )
+
+        println()
+    }
+
+    val pedidosCompletados =
+        pedidosDelDia.filter { pedidoActual ->
+            pedidoActual.estado == "Entregado"
+        }
+
+    val pedidosPendientes =
+        pedidosDelDia.filter { pedidoActual ->
+            pedidoActual.estado != "Entregado"
+        }
+
+    println(
+        "Pedidos completados: ${pedidosCompletados.size}"
+    )
+
+    println(
+        "Pedidos pendientes: ${pedidosPendientes.size}"
+    )
 
     println()
     println("=== PRUEBA DE INVENTARIO ===")
