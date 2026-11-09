@@ -1,6 +1,6 @@
 package model
 
-class Producto(
+open class Producto(
     val nombre: String,
     val precio: Double,
     val ingredientes: Map<String, Int>,
