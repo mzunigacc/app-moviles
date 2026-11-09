@@ -6,6 +6,12 @@ class InventarioService(
     private val inventario: MutableMap<String, Int>
 ) {
 
+    init {
+        require(inventario.values.all { it >= 0 }) {
+            "El inventario inicial no puede contener cantidades negativas."
+        }
+    }
+
     fun mostrarInventario() {
         println("=== INVENTARIO ===")
 
@@ -18,22 +24,19 @@ class InventarioService(
         productos: List<Producto>
     ): Map<String, Int> {
 
-        val ingredientesNecesarios =
-            mutableMapOf<String, Int>()
+        val ingredientesNecesarios = mutableMapOf<String, Int>()
 
         for (producto in productos) {
+            for ((ingrediente, cantidadPorPizza) in producto.ingredientes) {
 
-            for (
-                (ingrediente, cantidadPorPizza)
-                in producto.ingredientes
-            ) {
+                require(cantidadPorPizza > 0) {
+                    "La cantidad requerida de $ingrediente debe ser positiva."
+                }
 
-                val cantidadAcumulada =
-                    ingredientesNecesarios[ingrediente] ?: 0
+                val acumulado = ingredientesNecesarios[ingrediente] ?: 0
 
                 ingredientesNecesarios[ingrediente] =
-                    cantidadAcumulada +
-                    cantidadPorPizza
+                    Math.addExact(acumulado, cantidadPorPizza)
             }
         }
 
@@ -44,51 +47,40 @@ class InventarioService(
         ingredientesNecesarios: Map<String, Int>
     ): Boolean {
 
-        val faltantes =
-            mutableListOf<String>()
+        val faltantes = mutableListOf<String>()
 
-        for (
-            (ingrediente, cantidadNecesaria)
-            in ingredientesNecesarios
-        ) {
+        for ((ingrediente, cantidadNecesaria) in ingredientesNecesarios) {
 
-            val cantidadDisponible =
-                inventario[ingrediente] ?: 0
+            if (cantidadNecesaria <= 0) {
+                println("Cantidad requerida inválida para $ingrediente.")
+                return false
+            }
 
-            if (
-                cantidadDisponible <
-                cantidadNecesaria
-            ) {
+            val disponible = inventario[ingrediente] ?: 0
 
-                val cantidadFaltante =
-                    cantidadNecesaria -
-                    cantidadDisponible
+            if (disponible < 0) {
+                println("Inventario inconsistente para $ingrediente.")
+                return false
+            }
+
+            if (disponible < cantidadNecesaria) {
+                val faltante = cantidadNecesaria - disponible
 
                 faltantes.add(
-                    "$ingrediente " +
-                    "(disponible: $cantidadDisponible, " +
-                    "necesario: $cantidadNecesaria, " +
-                    "faltan: $cantidadFaltante)"
+                    "$ingrediente (disponible: $disponible, " +
+                    "necesario: $cantidadNecesaria, faltan: $faltante)"
                 )
             }
         }
 
         return when {
-
             faltantes.isEmpty() -> {
-
-                println(
-                    "Todos los ingredientes están disponibles."
-                )
-
+                println("Todos los ingredientes están disponibles.")
                 true
             }
 
             else -> {
-
-                println(
-                    "No hay ingredientes suficientes."
-                )
+                println("No hay ingredientes suficientes.")
 
                 for (faltante in faltantes) {
                     println("- $faltante")
@@ -96,18 +88,10 @@ class InventarioService(
 
                 println()
                 println("Pasos para reabastecer:")
-                println(
-                    "1. Identificar los ingredientes insuficientes."
-                )
-                println(
-                    "2. Reponer al menos la cantidad faltante."
-                )
-                println(
-                    "3. Actualizar el inventario."
-                )
-                println(
-                    "4. Volver a verificar el pedido."
-                )
+                println("1. Identificar los ingredientes insuficientes.")
+                println("2. Reponer al menos la cantidad faltante.")
+                println("3. Actualizar el inventario.")
+                println("4. Volver a verificar el pedido.")
 
                 false
             }
@@ -116,19 +100,20 @@ class InventarioService(
 
     fun descontarIngredientes(
         ingredientesNecesarios: Map<String, Int>
-    ) {
+    ): Boolean {
 
-        for (
-            (ingrediente, cantidadNecesaria)
-            in ingredientesNecesarios
-        ) {
-
-            val cantidadActual =
-                inventario[ingrediente] ?: 0
-
-            inventario[ingrediente] =
-                cantidadActual -
-                cantidadNecesaria
+        // Validar todas las cantidades antes de modificar el inventario.
+        if (!verificarDisponibilidad(ingredientesNecesarios)) {
+            println("Descuento cancelado: inventario sin modificaciones.")
+            return false
         }
+
+        // Solo descontamos cuando todos los ingredientes están disponibles.
+        for ((ingrediente, cantidadNecesaria) in ingredientesNecesarios) {
+            inventario[ingrediente] =
+                inventario.getValue(ingrediente) - cantidadNecesaria
+        }
+
+        return true
     }
 }

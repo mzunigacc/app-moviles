@@ -8,13 +8,12 @@ object RepartidorService {
         repartidores: List<Repartidor>
     ): Repartidor? {
 
-        val distanciaMinima =
-            repartidores.minOfOrNull { repartidor ->
+        return repartidores
+            .filter { repartidor ->
+                repartidor.disponible
+            }
+            .minByOrNull { repartidor ->
                 repartidor.distanciaKm
             }
-
-        return repartidores.find { repartidor ->
-            repartidor.distanciaKm == distanciaMinima
-        }
     }
 }
