@@ -2,6 +2,7 @@ package service
 
 import model.Cliente
 import model.DatosApp
+import model.ItemPedido
 import model.Pedido
 import model.Producto
 import model.Repartidor
@@ -10,26 +11,20 @@ object DatosPruebaFactory {
 
     fun crearDatos(): DatosApp {
 
+        // Clientes
         val clientePrincipal = Cliente(
             nombre = "Matías",
-            contacto = ValidacionService.validarTelefono(
-                "987654321"
-            ),
-            correo = ValidacionService.validarCorreo(
-                "matias@email.com"
-            )
+            contacto = "987654321",
+            correo = "matias@email.com"
         )
 
         val clienteSecundario = Cliente(
             nombre = "Camila",
-            contacto = ValidacionService.validarTelefono(
-                "976543210"
-            ),
-            correo = ValidacionService.validarCorreo(
-                "camila@email.com"
-            )
+            contacto = "976543210",
+            correo = "camila@email.com"
         )
 
+        // Productos
         val pizzaPepperoni = Producto(
             nombre = "Pizza Pepperoni",
             precio = 8990.0,
@@ -51,35 +46,49 @@ object DatosPruebaFactory {
             )
         )
 
+        // Pedido 1: tres pizzas del mismo tipo.
+        // Ahora corresponde a un solo ItemPedido con cantidad 3.
         val pedido1 = Pedido(
             cliente = clientePrincipal,
-            productos = listOf(
-                pizzaPepperoni,
-                pizzaPepperoni,
-                pizzaPepperoni
+            items = listOf(
+                ItemPedido(
+                    producto = pizzaPepperoni,
+                    cantidad = 3
+                )
             ),
-            estado = "Listo",
-            notas = null
+            estado = "Listo"
         )
 
+        // Pedido 2: dos tipos de pizza.
         val pedido2 = Pedido(
             cliente = clienteSecundario,
-            productos = listOf(
-                pizzaQueso,
-                pizzaPepperoni
+            items = listOf(
+                ItemPedido(
+                    producto = pizzaQueso,
+                    cantidad = 1
+                ),
+                ItemPedido(
+                    producto = pizzaPepperoni,
+                    cantidad = 1
+                )
             ),
             estado = "En camino",
             notas = "Entregar en recepción"
         )
 
+        // Pedido 3: una pizza entregada.
         val pedido3 = Pedido(
             cliente = clientePrincipal,
-            productos = listOf(
-                pizzaQueso
+            items = listOf(
+                ItemPedido(
+                    producto = pizzaQueso,
+                    cantidad = 1
+                )
             ),
             estado = "Entregado"
         )
 
+        // Repartidores
         val repartidorBase = Repartidor(
             nombre = "Carlos",
             contacto = "912345678",

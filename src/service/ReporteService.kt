@@ -9,11 +9,6 @@ object ReporteService {
         numeroPedido: Int
     ): String {
 
-        val productosAgrupados =
-            pedido.productos.groupBy { producto ->
-                producto.nombre
-            }
-
         return buildString {
 
             appendLine("Pedido $numeroPedido")
@@ -27,46 +22,46 @@ object ReporteService {
 
             appendLine("Productos:")
 
-            for ((_, productos) in productosAgrupados) {
-
-                val producto =
-                    productos.first()
-
-                val cantidad =
-                    productos.size
+            for (item in pedido.items) {
 
                 appendLine(
-                    "- ${producto.nombre} | " +
-                    "Precio: $${producto.precio} | " +
-                    "Cantidad: $cantidad"
+                    "- ${item.producto.nombre} | " +
+                    "Precio: $${item.producto.precio} | " +
+                    "Cantidad: ${item.cantidad} | " +
+                    "Subtotal: $${item.calcularSubtotal()}"
                 )
             }
 
             appendLine()
 
+            appendLine(
+                "Cantidad total de pizzas: ${pedido.calcularCantidadPizzas()}"
+            )
+
+            appendLine()
+
             appendLine("Totales:")
+
             appendLine(
                 "Subtotal: $${pedido.calcularSubtotal()}"
             )
+
             appendLine(
                 "Impuesto: $${pedido.calcularImpuesto()}"
             )
+
             appendLine(
                 "Descuento: $${pedido.calcularDescuento()}"
             )
+
             appendLine(
                 "Total final: $${pedido.calcularTotal()}"
             )
 
             appendLine()
 
-            appendLine(
-                "Estado: ${pedido.estado}"
-            )
-
-            append(
-                "Notas: ${pedido.obtenerNotas()}"
-            )
+            appendLine("Estado: ${pedido.estado}")
+            append("Notas: ${pedido.obtenerNotas()}")
         }
     }
 
@@ -74,41 +69,22 @@ object ReporteService {
         pedidos: Array<Pedido>
     ) {
 
-        println(
-            "=== REPORTE DE PEDIDOS DEL DÍA ==="
-        )
+        println("=== REPORTE DE PEDIDOS DEL DÍA ===")
 
-        for (
-            (indice, pedido)
-            in pedidos.withIndex()
-        ) {
-
-            println(
-                generarResumenPedido(
-                    pedido,
-                    indice + 1
-                )
-            )
-
+        for ((indice, pedido) in pedidos.withIndex()) {
+            println(generarResumenPedido(pedido, indice + 1))
             println()
         }
 
-        val completados =
-            pedidos.filter { pedido ->
-                pedido.estado == "Entregado"
-            }
+        val completados = pedidos.filter { pedido ->
+            pedido.estado == "Entregado"
+        }
 
-        val pendientes =
-            pedidos.filter { pedido ->
-                pedido.estado != "Entregado"
-            }
+        val pendientes = pedidos.filter { pedido ->
+            pedido.estado != "Entregado"
+        }
 
-        println(
-            "Pedidos completados: ${completados.size}"
-        )
-
-        println(
-            "Pedidos pendientes: ${pendientes.size}"
-        )
+        println("Pedidos completados: ${completados.size}")
+        println("Pedidos pendientes: ${pendientes.size}")
     }
 }
