@@ -13,8 +13,7 @@ class Pedido(
         }
     }
 
-    // Constructor temporal para mantener compatibilidad con Semana 2.
-    // Convierte cada producto antiguo en un ItemPedido de cantidad 1.
+    // Compatibilidad temporal con las llamadas antiguas de Semana 2.
     constructor(
         cliente: Cliente,
         productos: List<Producto>,
@@ -31,34 +30,23 @@ class Pedido(
         notas = notas
     )
 
-    // Adaptador temporal para las funciones antiguas de Main.kt.
     val productos: List<Producto>
         get() = items.flatMap { item ->
-            List(item.cantidad) {
-                item.producto
-            }
+            List(item.cantidad) { item.producto }
         }
 
     fun calcularCantidadPizzas(): Int {
-        return items.sumOf { item ->
-            item.cantidad
-        }
+        return items.sumOf { it.cantidad }
     }
 
     fun calcularSubtotal(): Double {
-        return items.sumOf { item ->
-            item.calcularSubtotal()
-        }
+        return items.sumOf { it.calcularSubtotal() }
     }
 
-    fun calcularImpuesto(
-        tasaImpuesto: Double = 0.19
-    ): Double {
-
+    fun calcularImpuesto(tasaImpuesto: Double = 0.19): Double {
         require(tasaImpuesto in 0.0..1.0) {
             "La tasa de impuesto debe estar entre 0 y 1."
         }
-
         return calcularSubtotal() * tasaImpuesto
     }
 
@@ -70,15 +58,10 @@ class Pedido(
         }
     }
 
-    fun calcularTotal(
-        tasaImpuesto: Double = 0.19
-    ): Double {
-
-        val subtotal = calcularSubtotal()
-        val impuesto = calcularImpuesto(tasaImpuesto)
-        val descuento = calcularDescuento()
-
-        return subtotal + impuesto - descuento
+    fun calcularTotal(tasaImpuesto: Double = 0.19): Double {
+        return calcularSubtotal() +
+            calcularImpuesto(tasaImpuesto) -
+            calcularDescuento()
     }
 
     fun obtenerNotas(): String {
@@ -88,4 +71,60 @@ class Pedido(
     fun cambiarEstado(nuevoEstado: String) {
         estado = nuevoEstado
     }
+
+    operator fun plus(otro: Pedido): Pedido {
+        require(cliente == otro.cliente) {
+            "No se pueden combinar pedidos de clientes diferentes."
+        }
+
+        val itemsCombinados = mutableListOf<ItemPedido>()
+
+        for (item in items + otro.items) {
+            val indiceExistente = itemsCombinados.indexOfFirst {
+                it.producto == item.producto
+            }
+
+            if (indiceExistente == -1) {
+                itemsCombinados.add(item)
+            } else {
+                val existente = itemsCombinados[indiceExistente]
+
+                require(
+                    existente.producto.precio == item.producto.precio &&
+                    existente.producto.ingredientes == item.producto.ingredientes
+                ) {
+                    "Un mismo producto tiene precios o recetas diferentes."
+                }
+
+                val nuevaCantidad = Math.addExact(
+                    existente.cantidad,
+                    item.cantidad
+                )
+
+                itemsCombinados[indiceExistente] = ItemPedido(
+                    producto = existente.producto,
+                    cantidad = nuevaCantidad
+                )
+            }
+        }
+
+        val notasCombinadas = listOfNotNull(notas, otro.notas)
+            .filter { it.isNotBlank() }
+            .distinct()
+            .joinToString(" | ")
+            .ifBlank { null }
+
+        return Pedido(
+            cliente = cliente,
+            items = itemsCombinados,
+            estado = "En preparación",
+            notas = notasCombinadas
+        )
+    }
+
+    operator fun component1(): Cliente = cliente
+
+    operator fun component2(): List<ItemPedido> = items
+
+    operator fun component3(): Double = calcularTotal()
 }
